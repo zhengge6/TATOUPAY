@@ -44,20 +44,21 @@ function CryptoStage({
 }) {
   const charge = data.crypto;
   if (!charge) return null;
+  const networkLabel = (charge.trade_type || "crypto").replace(".", " · ").toUpperCase();
   const amountText = charge.actual_amount || charge.amount;
   return (
     <div className="be-card">
         <div className="be-header">
-          <div className="be-brand"><span className="be-logo">U</span>TATOUPAY</div>
+          <div className="be-brand"><span className="be-logo">C</span>TATOUPAY</div>
         </div>
         <div className="be-amount">
           <div className="be-crypto">
-            <span>{amountText} USDT</span>
+            <span>{amountText}</span>
             <button type="button" className="be-copy" onClick={() => void navigator.clipboard.writeText(amountText)}>复制</button>
           </div>
           <div className="be-meta">
             <span>¥{data.payable_money}</span>
-            <span className="be-network">区块网络 · BNB Smart Chain</span>
+            <span className="be-network">{networkLabel}</span>
           </div>
         </div>
         <div className="be-row">
@@ -67,7 +68,7 @@ function CryptoStage({
         <div className="be-line" />
         <div className="be-order"><span>商户订单</span><span>{data.out_trade_no}</span></div>
         <div className="be-qr">
-          {qr ? <img src={qr} alt="USDT 收款地址" width={220} height={220} /> : <p>正在生成收款码</p>}
+          {qr ? <img src={qr} alt="crypto address" width={220} height={220} /> : <p>正在生成收款码</p>}
         </div>
         <div className="be-address">
           <div className="be-address-label">
@@ -76,9 +77,9 @@ function CryptoStage({
           </div>
           <p>{charge.address}</p>
         </div>
-        <p className="be-gas">BSC 上 USDT 是代币，矿工费用钱包里的 BNB 另付，不要加进应付 USDT。</p>
+        <p className="be-gas">链上代币转账的矿工费用该网络原生币支付，不要加进应付代币数量。</p>
         <button type="button" className="be-back" onClick={onBack}>选错了付款方式？返回重选</button>
-        <div className="be-foot">USDT · BNB Smart Chain</div>
+        <div className="be-foot">{networkLabel}</div>
     </div>
   );
 }
@@ -382,8 +383,8 @@ export function CheckoutPage() {
                   </MethodRow>
                 ) : null}
                 {hasCrypto ? (
-                  <MethodRow selected={activeMethod === "crypto"} onSelect={() => setMethod("crypto")} icon={<CryptoMark />} title="USDT">
-                    <RedirectHint>继续后显示 BNB Smart Chain 收款地址。请按显示的 USDT 数额付款；矿工费用 BNB 另付，不要加进 USDT。</RedirectHint>
+                  <MethodRow selected={activeMethod === "crypto"} onSelect={() => setMethod("crypto")} icon={<CryptoMark />} title="Crypto">
+                    <RedirectHint>继续后由 BEpusdt 给出收款网络与金额。请按显示数额付款；矿工费用该链原生币，不要加进代币数量。</RedirectHint>
                   </MethodRow>
                 ) : null}
               </div>

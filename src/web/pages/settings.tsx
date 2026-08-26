@@ -175,8 +175,8 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
 
       <Card>
         <CardHeader>
-          <CardTitle>USDT · BEpusdt</CardTitle>
-          <CardDescription>收银台第三种支付方式。调用已部署的 BEpusdt 创单 API，到账回调写回本系统订单。</CardDescription>
+          <CardTitle>BEpusdt</CardTitle>
+          <CardDescription>加密货币通道。网络与币种由 BEpusdt 的 trade_type 决定，不在本仓库写死。</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           <div className="grid gap-5 md:grid-cols-2">

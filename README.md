@@ -23,16 +23,14 @@ Checkout step one is a Stripe-style method list. Step two uses the native UI of 
 
 ## Channels
 
-| Rail | How it settles |
-|------|----------------|
-| Alipay business QR | OpenAPI account log, unique amount `+0.01`–`+0.99` |
-| Alipay transfer | Amount + memo = merchant order id |
-| USDT | BEpusdt (Go) sidecar, on-chain confirm |
-| Vmq | `/appHeart` `/appPush`, amount lock |
+| Rail | Status | How it settles |
+|------|--------|----------------|
+| Alipay business QR | Available | OpenAPI account log, unique amount `+0.01`–`+0.99` |
+| Alipay transfer | Available | Amount + memo = merchant order id |
+| Crypto (BEpusdt) | Available | Sidecar. Networks come from BEpusdt (`trade_type`), not hardcoded here |
+| Vmq | Not available | Monitor `heart`/`push` stubs only. No create-order, no amount-code admin, not on checkout |
 
 No refunds, payouts, close-order, settlement, or multi-merchant.
-
-USDT on BNB Smart Chain is a token. Gas is BNB. Shared-address match is exact USDT amount.
 
 ## How to use
 
@@ -50,7 +48,7 @@ bun run dev
 - API: `http://127.0.0.1:3000`
 - Health: `GET /healthz`
 
-First visit creates `admin` (password length >= 12). Configure Alipay keys in the admin UI. Optional: BEpusdt base URL and token.
+First visit creates `admin` (password length >= 12). Configure Alipay keys in the admin UI. Optional: BEpusdt base URL, token, and `trade_type`.
 
 ```bash
 bun run build
@@ -65,7 +63,7 @@ Set `PUBLIC_BASE_URL` to the public HTTPS origin. Leave `APP_MASTER_KEY` empty u
 - EasyPay V2: SHA256WithRSA, 10-digit `timestamp`, ±300s.
 - Alipay bills: one merged scan while pending orders exist. Checkout 5 min; match until minute 10.
 - BEpusdt: `POST /api/v1/order/create-transaction`; notify `status=2`, reply `success`.
-- Vmq: `md5(t+key)`, `md5(type+price+t+key)`. Create-order UI not finished.
+- Vmq: not wired into checkout.
 
 ## Docs
 
