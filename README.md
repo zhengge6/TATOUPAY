@@ -11,7 +11,7 @@
 <p align="center">
   <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
   ·
-  <a href="https://zhengge6.github.io/Tatoupay/">Site</a>
+  <a href="https://zhengge6.github.io/TATOUPAY/">Site</a>
 </p>
 
 <p align="center">
@@ -39,8 +39,8 @@ USDT on BNB Smart Chain is a token. Gas is BNB. Shared-address match is exact US
 Requires [Bun](https://bun.sh) >= 1.3.
 
 ```bash
-git clone https://github.com/zhengge6/Tatoupay.git
-cd Tatoupay
+git clone https://github.com/zhengge6/TATOUPAY.git
+cd TATOUPAY
 bun install --frozen-lockfile
 cp .env.example .env
 bun run dev

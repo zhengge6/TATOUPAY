@@ -153,7 +153,7 @@ export class NotificationWorker {
         method: "GET",
         redirect: "manual",
         headers: {
-          "user-agent": "Tatoupay/1.0 notification",
+          "user-agent": "TATOUPAY/1.0 notification",
           accept: "text/plain, */*;q=0.1",
         },
         signal: AbortSignal.timeout(10_000),

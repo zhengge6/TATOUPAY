@@ -48,7 +48,7 @@ function CryptoStage({
   return (
     <div className="be-card">
         <div className="be-header">
-          <div className="be-brand"><span className="be-logo">U</span>Tatoupay</div>
+          <div className="be-brand"><span className="be-logo">U</span>TATOUPAY</div>
         </div>
         <div className="be-amount">
           <div className="be-crypto">
@@ -199,7 +199,7 @@ function Summary({ data, checkoutExpired, remainLabel, requestedCents, surcharge
 }) {
   return (
     <section className="flex flex-col px-6 py-8 sm:px-10 lg:border-r lg:border-[var(--ui-line)] lg:px-12 lg:py-14">
-      <div className="text-sm font-medium">Tatoupay</div>
+      <div className="text-sm font-medium">TATOUPAY</div>
       <p className="mt-8 text-sm text-[var(--ui-ink-2)]">应付金额</p>
       <h1 className="checkout-amount mt-2 font-mono text-[48px] sm:text-[56px]">¥{data.payable_money}</h1>
       <p className="mt-3 text-sm text-[var(--ui-ink-2)]">{checkoutExpired ? "收银台已过期，正在确认" : `剩余 ${remainLabel}`}</p>
@@ -438,7 +438,7 @@ export function CheckoutPage() {
           {step === "method" ? (
             <p className="mt-auto flex items-center gap-2 pt-10 text-xs text-[var(--ui-ink-3)]">
               <Lock className="size-3.5" />
-              由 Tatoupay 处理 · 请勿重复支付
+              由 TATOUPAY 处理 · 请勿重复支付
             </p>
           ) : null}
         </section>
