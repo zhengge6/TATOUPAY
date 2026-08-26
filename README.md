@@ -22,7 +22,7 @@
   <img alt="Pages" src="https://img.shields.io/badge/site-GitHub%20Pages-111111?style=flat-square" />
 </p>
 
-Forked from [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay). Site: [zhengge6.github.io/Tatoupay](https://zhengge6.github.io/Tatoupay/)
+Site: [lepao.me/Tatoupay](http://lepao.me/Tatoupay/)
 
 ## What it is
 
@@ -110,8 +110,7 @@ Set `PUBLIC_BASE_URL` to the HTTPS origin in front of the process. Leave `APP_MA
 ## Docs
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Site](https://zhengge6.github.io/Tatoupay/)
-- Upstream: [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay)
+- [Site](http://lepao.me/Tatoupay/)
 - [Alipay V3 account log](https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query)
 - [BEpusdt](https://github.com/v03413/BEpusdt)
 
@@ -129,4 +128,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Do not commit `data/` or `.env`.
 
 ## License
 
-Follow [upstream](https://github.com/MiaM1ku/AliMPay) unless a `LICENSE` file is added here. BEpusdt keeps its own license. This repo does not vendor its checkout HTML.
+Third-party runtimes such as BEpusdt keep their own licenses. This repo does not vendor their checkout HTML.

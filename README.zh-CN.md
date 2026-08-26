@@ -19,10 +19,10 @@
 <p align="center">
   <img alt="Bun" src="https://img.shields.io/badge/runtime-Bun%20%E2%89%A5%201.3-f9f1e1?style=flat-square" />
   <img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178C6?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/badge/license-see%20upstream-111111?style=flat-square" />
+  <img alt="License" src="https://img.shields.io/badge/license-source-111111?style=flat-square" />
 </p>
 
-基于 [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay) 扩展：支付宝经营码、转账码、USDT（BEpusdt 旁路）、V免签监控协议。
+TATOUPAY 提供支付宝经营码、转账码、USDT（BEpusdt 旁路）和 V免签监控协议。
 
 ## 它是什么
 
@@ -110,8 +110,7 @@ bun run start
 ## 文档
 
 - [架构](docs/ARCHITECTURE.md)
-- 上游：[MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay)
-- 支付宝 V3 账务明细：[开放平台](https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query)
+- [支付宝 V3 账务明细](https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query)
 - BEpusdt：[v03413/BEpusdt](https://github.com/v03413/BEpusdt)
 
 ## 安全
@@ -124,8 +123,8 @@ bun run start
 
 ## 参与
 
-这是一份在用的 fork。请对 Stripe 外壳和通道模块（`src/server/bepusdt.ts`、`src/server/vmq.ts`）做小改动。不要提交 `data/` 或 `.env`。
+请对 Stripe 外壳和通道模块（`src/server/bepusdt.ts`、`src/server/vmq.ts`）做小改动。不要提交 `data/` 或 `.env`。
 
 ## 许可
 
-以 [上游仓库](https://github.com/MiaM1ku/AliMPay) 为准，除非本仓库另加 `LICENSE`。BEpusdt 等第三方保持其原许可；本仓库不内嵌其收银台 HTML。
+BEpusdt 等第三方保持其原许可；本仓库不内嵌其收银台 HTML。
