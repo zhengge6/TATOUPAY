@@ -1,34 +1,38 @@
 <p align="center">
-  <img src="public/logo.svg" width="88" height="88" alt="AliMPay" />
+  <img src="public/logo.svg" width="88" height="88" alt="TATOUPAY" />
 </p>
 
-<h1 align="center">AliMPay</h1>
+<h1 align="center">TATOUPAY</h1>
 
 <p align="center">
-  <strong>A single-instance payment gateway with a Stripe-class checkout shell and channel-native second screens.</strong>
+  <strong>A single-instance payment gateway. Stripe-shaped checkout shell. Channel-native second screens.</strong>
 </p>
 
 <p align="center">
-  One Bun process. Merchant admin, hosted checkout, EasyPay-compatible APIs, Alipay bill matching, optional USDT via BEpusdt, and V免签 monitor hooks.
+  One Bun process: merchant admin, hosted checkout, EasyPay-compatible APIs, Alipay bill matching, optional USDT via BEpusdt, and Vmq monitor endpoints.
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a>
 </p>
 
 <p align="center">
   <img alt="Bun" src="https://img.shields.io/badge/runtime-Bun%20%E2%89%A5%201.3-f9f1e1?style=flat-square" />
   <img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178C6?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/badge/license-see%20upstream-111111?style=flat-square" />
+  <img alt="Pages" src="https://img.shields.io/badge/site-GitHub%20Pages-111111?style=flat-square" />
 </p>
 
-Forked from [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay) and extended into a multi-rail cashier: Alipay business QR, Alipay transfer, USDT (BEpusdt sidecar), and V免签-compatible monitor endpoints.
+Forked from [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay). Site: [zhengge6.github.io/Tatoupay](https://zhengge6.github.io/Tatoupay/)
 
 ## What it is
 
-AliMPay is **not** a multi-tenant acquirer. It is a **single merchant, single process** gateway:
+Tatoupay is **not** a multi-tenant acquirer. It is a **single merchant, single process** gateway:
 
-- React admin and public checkout from one origin
+- React admin and public checkout on one origin
 - EasyPay V1 (MD5) and V2 (RSA) for existing merchant software
-- Alipay OpenAPI V3 `alipay.data.bill.accountlog.query` for official bill matching
-- Checkout **step one** always looks like Stripe (order summary + payment method list)
-- Checkout **step two** changes skin per rail (Alipay blue cashier, BEpusdt card, later V免签)
+- Alipay OpenAPI V3 account-log matching
+- Checkout **step one** is always Stripe-shaped (summary + method list)
+- Checkout **step two** changes skin per rail
 
 It does **not** implement refunds, payouts, close-order, settlement, or multi-merchant.
 
@@ -36,36 +40,36 @@ It does **not** implement refunds, payouts, close-order, settlement, or multi-me
 
 | Rail | Backend | Matching | Second screen |
 |------|---------|----------|----------------|
-| Business QR | This process + Alipay OpenAPI | Unique payable amount (`+0.01`–`+0.99`) | Official Alipay blue |
-| Transfer | This process + `alipays://` | Amount + `memo` = `out_trade_no` | Stripe panel |
-| USDT | **Keep BEpusdt (Go)** as sidecar | On-chain confirm in BEpusdt, notify back | BEpusdt official visual language |
-| V免签 | This process `/appHeart` `/appPush` | Amount lock + APK push | Planned V免签 pay page |
+| Business QR | This process + Alipay OpenAPI | Unique payable amount (`+0.01` to `+0.99`) | Alipay official blue |
+| Transfer | This process + `alipays://` | Amount + memo = merchant order id | Stripe panel |
+| USDT | Keep BEpusdt (Go) as sidecar | On-chain confirm, notify back | BEpusdt visual language |
+| Vmq | This process `/appHeart` `/appPush` | Amount lock + APK push | In progress |
 
-BEpusdt is **not** rewritten in Bun. Chain scan, FX, address lock, and confirmations stay in Go. This repo only calls `create-transaction` and accepts `notify`.
+BEpusdt is **not** rewritten in Bun. This repo calls `create-transaction` and accepts `notify`.
 
-USDT on BNB Smart Chain is a **token**. Gas is **BNB**. Shared-address matching requires the **exact** USDT amount; do not add gas into the USDT figure.
+USDT on BNB Smart Chain is a **token**. Gas is **BNB**. Shared-address matching needs the **exact** USDT amount. Do not add gas into the USDT figure.
 
-## Why this vs. gluing three UIs
+## Why this vs. three separate UIs
 
-Typical stacks run AliMPay, BEpusdt, and V免签 as three admin sites and three cashier skins. Merchants then teach users three different checkouts.
+Typical stacks run three admins and three cashiers. Users learn three products.
 
-AliMPay splits work the same way OpenCodeReview splits engineering vs. agent:
+Tatoupay splits work:
 
 **Must not fail (this process)**  
-Method list, order identity, EasyPay signatures, CSRF, SQLite constraints, notify `success` semantics.
+Method list, order identity, EasyPay signatures, CSRF, SQLite constraints, notify body `success`.
 
-**Channel-native (judgment + UX)**  
-Each rail keeps the product language users already trust: Alipay blue countdown, BEpusdt green amount + copy, V免签 amount codes.
+**Channel-native UX**  
+Alipay blue countdown, BEpusdt green amount + copy, Vmq amount codes.
 
 ## How to use
 
-**Need:** [Bun](https://bun.sh) ≥ 1.3.
+**Need:** [Bun](https://bun.sh) 1.3 or newer.
 
 ### Install
 
 ```bash
-git clone https://github.com/zhengge6/AliMPay.git
-cd AliMPay
+git clone https://github.com/zhengge6/Tatoupay.git
+cd Tatoupay
 bun install --frozen-lockfile
 cp .env.example .env
 ```
@@ -80,7 +84,7 @@ bun run dev
 - API: `http://127.0.0.1:3000`
 - Health: `GET /healthz`  `GET /readyz`
 
-First visit creates `admin` (password ≥ 12 chars). Put Alipay app keys in **密钥中心** and **收款配置**. Optional: BEpusdt base URL + API token for USDT; V免签 APK against `/appHeart` and `/appPush`.
+First visit creates `admin` (password at least 12 characters). Put Alipay keys in Key Center and Collection settings. Optional: BEpusdt base URL and API token. Vmq APK against `/appHeart` and `/appPush`.
 
 Production:
 
@@ -89,39 +93,40 @@ bun run build
 bun run start
 ```
 
-Set `PUBLIC_BASE_URL` to the HTTPS origin in front of the process. Leave `APP_MASTER_KEY` empty unless you inject it from a secret manager. Never rotate `.master-key` after encrypted credentials exist.
+Set `PUBLIC_BASE_URL` to the HTTPS origin in front of the process. Leave `APP_MASTER_KEY` empty unless a secret manager injects it. Do not rotate `.master-key` after encrypted credentials exist.
 
 ## Protocol notes
 
-**Alipay bills** — one merged scan for all pending orders, not one HTTP call per order. Checkout is live for 5 minutes; matching continues until minute 10 (`late_paid` still reports `status=1`).
+**Alipay bills** — one merged scan for all pending orders. Checkout lives 5 minutes; matching continues until minute 10 (`late_paid` still reports `status=1`).
 
-**EasyPay V1** — `submit.php`, `mapi.php`, `api.php`. Canonical query string + merchant key, lowercase MD5. `type=alipay` only on the official-bill rails.
+**EasyPay V1** — `submit.php`, `mapi.php`, `api.php`. Canonical query string plus merchant key, lowercase MD5. Official-bill rails accept `type=alipay` only.
 
-**EasyPay V2** — SHA256WithRSA, 10-digit `timestamp`, ±300s.
+**EasyPay V2** — SHA256WithRSA, 10-digit `timestamp`, plus or minus 300 seconds.
 
-**V免签 monitor (partial)** — `sign(appHeart)=md5(t+key)`, `sign(appPush)=md5(type+price+t+key)`. Create-order / amount-code admin UI is in progress.
+**Vmq monitor (partial)** — `sign(appHeart)=md5(t+key)`, `sign(appPush)=md5(type+price+t+key)`. Create-order admin UI is in progress.
 
-**BEpusdt** — `POST /api/v1/order/create-transaction`; notify `status=2` with the same MD5 token scheme, reply body `success`.
+**BEpusdt** — `POST /api/v1/order/create-transaction`; notify `status=2`, reply `success`.
 
 ## Docs
 
 - [Architecture](docs/ARCHITECTURE.md)
+- [Site](https://zhengge6.github.io/Tatoupay/)
 - Upstream: [MiaM1ku/AliMPay](https://github.com/MiaM1ku/AliMPay)
-- Alipay V3 account log: [opendocs](https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query)
-- BEpusdt: [v03413/BEpusdt](https://github.com/v03413/BEpusdt)
+- [Alipay V3 account log](https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query)
+- [BEpusdt](https://github.com/v03413/BEpusdt)
 
 ## Security
 
 - Admin sessions: HttpOnly, SameSite=Strict, Secure in production
-- Write APIs: CSRF token + Origin
-- App private key, V1 key, V2 platform key, BEpusdt token, V免签 key: AES-256-GCM under `APP_MASTER_KEY`
-- Amounts stored as integer cents
-- Callbacks reject private hosts unless `ALLOW_PRIVATE_CALLBACKS=true`
+- Writes: CSRF token and Origin
+- Secrets: AES-256-GCM under `APP_MASTER_KEY`
+- Amounts as integer cents
+- Callbacks refuse private hosts unless `ALLOW_PRIVATE_CALLBACKS=true`
 
 ## Contributing
 
-This tree is a working fork. Prefer small diffs against the Stripe checkout shell and isolated channel modules (`src/server/bepusdt.ts`, `src/server/vmq.ts`). Do not commit `data/` or `.env`.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Do not commit `data/` or `.env`.
 
 ## License
 
-Follow the [upstream project](https://github.com/MiaM1ku/AliMPay) unless a `LICENSE` file is added here. Third-party runtimes (BEpusdt) keep their own licenses; this repo does not vendor their checkout HTML.
+Follow [upstream](https://github.com/MiaM1ku/AliMPay) unless a `LICENSE` file is added here. BEpusdt keeps its own license. This repo does not vendor its checkout HTML.

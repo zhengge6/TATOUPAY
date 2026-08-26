@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TATOUPAY</title>
+  <meta name="description" content="Single-instance payment gateway. Stripe-shaped checkout. Channel-native second screens." />
+  <link rel="icon" href="./logo.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --ink: #16140f;
+      --muted: #5c564c;
+      --line: #d8d2c6;
+      --paper: #fcfaf5;
+      --accent: #0b3d91;
+      --alipay: #1677ff;
+      --usdt: #26a17b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif;
+      min-height: 100dvh;
+    }
+    .sans { font-family: ui-sans-serif, "Segoe UI", sans-serif; }
+    .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
+    a { color: inherit; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 7vw;
+      border-bottom: 1px solid var(--line);
+    }
+    .mark { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .mark img { width: 36px; height: 36px; }
+    .word {
+      letter-spacing: 0.22em;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    nav { display: flex; gap: 22px; font-size: 13px; letter-spacing: 0.08em; }
+    nav a { text-decoration: none; color: var(--muted); }
+    nav a:hover { color: var(--ink); }
+    hero, .hero {
+      padding: 9vh 7vw 8vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: end;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 8vw, 92px);
+      letter-spacing: 0.14em;
+      line-height: 0.92;
+      font-weight: 600;
+    }
+    .lede {
+      max-width: 36rem;
+      font-size: 18px;
+      line-height: 1.55;
+      color: var(--muted);
+      font-family: ui-sans-serif, "Segoe UI", sans-serif;
+    }
+    .cta {
+      display: inline-flex;
+      margin-top: 28px;
+      padding: 12px 18px;
+      background: var(--ink);
+      color: var(--paper);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .shell {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      min-height: 280px;
+      display: grid;
+      grid-template-columns: 0.42fr 0.58fr;
+    }
+    .shell aside, .shell main { padding: 22px; }
+    .shell aside { border-right: 1px solid var(--line); }
+    .k { font-size: 11px; letter-spacing: 0.16em; color: var(--muted); }
+    .price { font-size: 42px; letter-spacing: -0.04em; margin: 10px 0 0; }
+    .rail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: ui-sans-serif, "Segoe UI", sans-serif;
+      font-size: 14px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 99px; border: 1px solid var(--ink); }
+    .dot.on { background: var(--ink); }
+    section { padding: 0 7vw 10vh; }
+    h2 { font-size: 13px; letter-spacing: 0.2em; margin: 0 0 24px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .cell { background: var(--paper); padding: 22px; min-height: 180px; }
+    .cell h3 { margin: 0 0 10px; font-size: 16px; }
+    .cell p { margin: 0; font-family: ui-sans-serif, "Segoe UI", sans-serif; font-size: 13px; line-height: 1.55; color: var(--muted); }
+    .tag { display: inline-block; font-size: 10px; letter-spacing: 0.14em; margin-bottom: 12px; color: var(--accent); }
+    footer {
+      padding: 28px 7vw;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    @media (max-width: 900px) {
+      .hero, .grid, .shell { grid-template-columns: 1fr; }
+      .shell aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      nav { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="mark" href="./">
+      <img src="./logo.svg" alt="" />
+      <span class="word">TATOUPAY</span>
+    </a>
+    <nav class="sans">
+      <a href="https://github.com/zhengge6/Tatoupay">GitHub</a>
+      <a href="./ARCHITECTURE.md">Architecture</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>TATOUPAY</h1>
+      <p class="lede">A payment terminal for one merchant. Step one is a Stripe method list. Step two wears the native skin of each rail: Alipay blue, BEpusdt green amount, Vmq codes.</p>
+      <a class="cta sans" href="https://github.com/zhengge6/Tatoupay">VIEW SOURCE</a>
+    </div>
+    <div class="shell" aria-hidden="true">
+      <aside>
+        <div class="k">AMOUNT DUE</div>
+        <div class="price">¥5.01</div>
+      </aside>
+      <main>
+        <div class="k" style="margin-bottom:12px">PAYMENT METHOD</div>
+        <div class="rail"><span><i class="dot on"></i> Business QR</span>Recommended</div>
+        <div class="rail"><span><i class="dot"></i> Transfer</span></div>
+        <div class="rail"><span><i class="dot"></i> USDT</span>BEP20</div>
+      </main>
+    </div>
+  </div>
+
+  <section>
+    <h2>RAILS</h2>
+    <div class="grid">
+      <article class="cell">
+        <div class="tag">ALIPAY OPENAPI</div>
+        <h3>Business QR</h3>
+        <p>Official bill match on a unique payable amount. Second screen uses Alipay blue and a live countdown.</p>
+      </article>
+      <article class="cell">
+        <div class="tag">ALIPAYS</div>
+        <h3>Transfer</h3>
+        <p>Amount and merchant order id written into the transfer memo. Same Stripe shell.</p>
+      </article>
+      <article class="cell">
+        <div class="tag">BEPUSDT SIDECAR</div>
+        <h3>USDT</h3>
+        <p>Go scanner stays. Exact token amount. BNB gas is separate and never added to USDT.</p>
+      </article>
+      <article class="cell">
+        <div class="tag">VMQ</div>
+        <h3>Unattended QR</h3>
+        <p>APK heart and push stay on the original paths. Amount lock is isolated from business QR.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    <span>TATOUPAY</span>
+    <span class="sans">Forked from MiaM1ku/AliMPay</span>
+  </footer>
+</body>
+</html>
