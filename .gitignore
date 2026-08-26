@@ -5,5 +5,15 @@ playwright-report/
 test-results/
 data/
 .env
+.env.*
+!.env.example
 *.log
 .DS_Store
+*.sqlite
+*.sqlite-*
+.master-key
+*.pem
+*.key
+.idea/
+.vscode/
+Thumbs.db

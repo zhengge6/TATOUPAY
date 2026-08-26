@@ -1,22 +1,13 @@
 # Architecture
 
-Checkout is a two-step Stripe shell. Step two is channel-native.
+Two-step checkout. Step one is a Stripe method list. Step two is channel-native.
 
 ```
-Merchant (EasyPay V1/V2)
-        │
-        ▼
- Tatoupay  (Bun + Hono + React + SQLite)
-   step 1: payment method list
-   step 2:
-     business QR  → Alipay blue cashier
-     transfer     → Stripe panel + alipays URI
-     USDT         → BEpusdt visual language
-     V免签        → amount QR (monitor APK)
-
- BEpusdt (Go) remains a sidecar:
-   create-transaction → address + actual USDT amount
-   notify status=2    → mark Tatoupay order paid
+EasyPay V1/V2
+    -> Tatoupay (Bun + Hono + React + SQLite)
+         Alipay OpenAPI bills
+         BEpusdt Go sidecar (USDT)
+         Vmq /appHeart /appPush
 ```
 
-USDT on BNB Smart Chain: match **USDT amount**, not BNB gas. Shared address = exact amount. Exclusive address = one order per address.
+USDT on BSC: match token amount. Gas is BNB.
