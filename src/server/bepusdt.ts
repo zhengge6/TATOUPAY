@@ -3,7 +3,6 @@ import { getSecret } from "./config";
 import { getSetting, type AppDatabase } from "./db";
 import { AppError, assert } from "./errors";
 import { markOrderPaidExternal } from "./orders";
-import { createNativeCharge, getNativeCryptoConfig } from "./native-crypto";
 
 export interface CryptoCharge {
   trade_id: string;
@@ -70,15 +69,10 @@ export async function createCryptoCharge(database: AppDatabase, order: {
   payable_amount_cents: number;
   checkout_token: string;
 }): Promise<CryptoCharge> {
-  const existing = getCryptoCharge(database, order.id);
-  if (existing) return existing;
-  const native = getNativeCryptoConfig(database);
-  if (native.enabled && native.addresses.length > 0) {
-    assert(native.rateCnyPerUsdt > 0, 503, "CRYPTO_NOT_CONFIGURED", "原生 USDT 尚未设置汇率");
-    return createNativeCharge(database, order);
-  }
   const config = getBepusdtConfig(database);
   assert(config.enabled, 503, "CRYPTO_NOT_CONFIGURED", "未配置 BEpusdt 地址或 API Token");
+  const existing = getCryptoCharge(database, order.id);
+  if (existing) return existing;
 
   const publicBase = getSetting(database, "public_base_url", "").replace(/\/$/, "");
   const amount = (order.payable_amount_cents / 100).toFixed(2);

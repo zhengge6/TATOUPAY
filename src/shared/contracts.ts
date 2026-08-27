@@ -77,10 +77,6 @@ export interface PublicSettings {
   v2_platform_public_key: string;
   v2_merchant_public_key: string;
   allow_private_callbacks: boolean;
-  native_crypto_enabled: boolean;
-  native_tron_addresses: string;
-  native_usdt_cny_rate: string;
-  native_tron_api_url: string;
 }
 
 export interface CheckoutData {
@@ -108,7 +104,6 @@ export interface CheckoutData {
     trade_type: string;
     payment_url: string;
     expiration_time: number;
-    provider?: "bepusdt" | "native" | "preview";
   };
   return_url: string | null;
   return_target: string | null;

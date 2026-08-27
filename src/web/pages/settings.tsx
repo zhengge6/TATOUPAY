@@ -46,10 +46,6 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
   const [bepusdtBaseUrl, setBepusdtBaseUrl] = useState(initial.bepusdt_base_url);
   const [bepusdtTradeType, setBepusdtTradeType] = useState(initial.bepusdt_trade_type || "usdt.trc20");
   const [bepusdtToken, setBepusdtToken] = useState("");
-  const [nativeEnabled, setNativeEnabled] = useState(initial.native_crypto_enabled);
-  const [nativeAddresses, setNativeAddresses] = useState(initial.native_tron_addresses);
-  const [nativeRate, setNativeRate] = useState(initial.native_usdt_cny_rate);
-  const [nativeApiUrl, setNativeApiUrl] = useState(initial.native_tron_api_url);
   const [saving, setSaving] = useState(false);
 
   async function save(event: FormEvent) {
@@ -72,10 +68,6 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
           bepusdt_base_url: bepusdtBaseUrl,
           bepusdt_trade_type: bepusdtTradeType,
           ...(bepusdtToken.trim() ? { bepusdt_api_token: bepusdtToken.trim() } : {}),
-          native_crypto_enabled: nativeEnabled,
-          native_tron_addresses: nativeAddresses,
-          native_usdt_cny_rate: nativeRate,
-          native_tron_api_url: nativeApiUrl,
         }),
       });
       toast.success("配置已保存");
@@ -203,41 +195,6 @@ function SettingsForm({ initial, refresh }: { initial: SettingsData; refresh: ()
           </div>
           <Badge variant={initial.has_bepusdt_api_token && bepusdtBaseUrl ? "success" : "danger"}>{initial.has_bepusdt_api_token && bepusdtBaseUrl ? "已启用" : "未启用"}</Badge>
           <p className="text-xs leading-5 text-muted">notify_url 会使用上方公开地址 + /public-api/bepusdt/notify。BEpusdt 必须能访问这个地址。</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>原生 USDT（TRON）</CardTitle>
-          <CardDescription>内建 TRC20 链上监控，无需外部 BEpusdt 进程。两套都配置时优先使用原生。</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="flex items-center justify-between gap-4 rounded-md border p-4">
-            <div>
-              <div className="text-sm font-medium">启用原生链上收款</div>
-              <p className="mt-1 text-xs text-muted">服务端每 12 秒轮询一次 TRON 链上 USDT 转账并精确匹配金额。</p>
-            </div>
-            <Switch checked={nativeEnabled} onCheckedChange={setNativeEnabled} aria-label="启用原生 USDT 收款" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="native-addresses">TRON 收款地址池</Label>
-            <Textarea id="native-addresses" rows={4} value={nativeAddresses} onChange={(event) => setNativeAddresses(event.target.value)} placeholder={"TXYZe…每行一个地址，轮流分配给订单"} />
-          </div>
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="native-rate">汇率（1 USDT = ? CNY）</Label>
-              <Input id="native-rate" inputMode="decimal" value={nativeRate} onChange={(event) => setNativeRate(event.target.value.trim())} placeholder="7.24" />
-              <p className="text-xs leading-5 text-muted">创单时按此汇率换算并以快照写入订单，之后改价不影响已有订单。</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="native-api">TRON API 根地址</Label>
-              <Input id="native-api" type="url" value={nativeApiUrl} onChange={(event) => setNativeApiUrl(event.target.value.trim())} placeholder="https://api.trongrid.io" />
-              <p className="text-xs leading-5 text-muted">留空使用 TronGrid 公共接口；必须 HTTPS。</p>
-            </div>
-          </div>
-          <Badge variant={nativeEnabled && nativeAddresses.trim() && nativeRate ? "success" : "danger"}>
-            {nativeEnabled && nativeAddresses.trim() && nativeRate ? "已启用" : "未启用"}
-          </Badge>
         </CardContent>
       </Card>
 

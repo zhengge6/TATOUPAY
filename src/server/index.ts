@@ -13,7 +13,6 @@ import { NotificationWorker } from "./notifications";
 import { buildSignedReturnUrl } from "./notifications";
 import { getCheckoutData, getOrderByCheckoutToken } from "./orders";
 import { createCryptoCharge, handleBepusdtNotify } from "./bepusdt";
-import { UsdtWatcher } from "./native-crypto";
 import { createVmqRoutes } from "./vmq";
 
 const ASSET_CONTENT_TYPES: Record<string, string> = {
@@ -34,14 +33,12 @@ export interface AppServices {
   database: AppDatabase;
   scanner: PaymentScanner;
   notifications: NotificationWorker;
-  watcher: UsdtWatcher;
 }
 
 export function createApp(services?: Partial<AppServices>) {
   const database = services?.database ?? getDatabase();
   const scanner = services?.scanner ?? new PaymentScanner(database);
   const notifications = services?.notifications ?? new NotificationWorker(database);
-  const watcher = services?.watcher ?? new UsdtWatcher(database);
   const app = new Hono();
 
   app.use("*", secureHeaders({
@@ -169,14 +166,13 @@ export function createApp(services?: Partial<AppServices>) {
     return c.json({ error: appError.code, message: appError.message, details: appError.details }, appError.status as 400);
   });
 
-  return { app, services: { database, scanner, notifications, watcher } };
+  return { app, services: { database, scanner, notifications } };
 }
 
 if (import.meta.main) {
   const { app, services } = createApp();
   services.scanner.start();
   services.notifications.start();
-  services.watcher.start();
   const runtime = getRuntimeEnv();
   const server = Bun.serve({
     hostname: runtime.host,
@@ -188,7 +184,6 @@ if (import.meta.main) {
   const shutdown = () => {
     services.scanner.stop();
     services.notifications.stop();
-    services.watcher.stop();
     void server.stop(true);
   };
   process.on("SIGINT", shutdown);
