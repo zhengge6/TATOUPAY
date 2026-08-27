@@ -443,6 +443,105 @@
     .terminal .hl { color: #ffd9a8; }
     .terminal .gr { color: #9fe6b8; }
 
+    /* ---------- demo ---------- */
+    .demogrid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 26px; align-items: stretch; }
+    .demorails { display: flex; flex-direction: column; gap: 12px; }
+    .drail {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 16px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      text-align: left;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .drail:hover:not(:disabled) { transform: translateX(3px); box-shadow: 5px 5px 0 rgba(24,34,24,.08); }
+    .drail.on { border-color: var(--green); box-shadow: inset 3px 0 0 var(--green); }
+    .drail:disabled { opacity: 0.55; cursor: not-allowed; }
+    .drail i {
+      width: 10px; height: 10px; border-radius: 99px;
+      border: 1px solid var(--ink-soft); flex-shrink: 0;
+    }
+    .drail.on i { background: var(--ink); }
+    .drail em {
+      margin-left: auto;
+      font-family: "IBM Plex Mono", monospace;
+      font-style: normal;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+    }
+    .device {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line-ink);
+      box-shadow: var(--shadow);
+      min-height: 340px;
+      overflow: hidden;
+    }
+    .device::before {
+      content: "";
+      display: block;
+      height: 8px;
+      background: repeating-linear-gradient(90deg, var(--ink) 0 14px, transparent 14px 22px);
+      opacity: 0.85;
+    }
+    .dmscreen { position: absolute; inset: 8px 0 0; padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+    .dm-empty { margin: auto; text-align: center; max-width: 30ch; }
+    .dm-empty h3 { font-family: "Fraunces", Georgia, serif; font-size: 24px; margin: 8px 0; }
+    .dm-empty p { color: var(--muted); font-size: 13.5px; margin: 0; line-height: 1.6; }
+    .dm-empty .c { color: var(--copper); font-style: normal; font-weight: 700; }
+    .dmhead { display: flex; justify-content: space-between; align-items: center; }
+    .dmamount { font-family: "Fraunces", Georgia, serif; font-size: 42px; letter-spacing: -0.03em; }
+    .dmqrbox { position: relative; width: 148px; height: 148px; margin: 4px auto; border: 1px dashed var(--line-ink); background-image: radial-gradient(var(--line-ink) 1.3px, transparent 1.3px); background-size: 12px 12px; overflow: hidden; }
+    .dmqrbox::after {
+      content: "";
+      position: absolute; left: 0; right: 0; height: 46px;
+      background: linear-gradient(to bottom, rgba(29,122,83,0) 0%, rgba(29,122,83,0.28) 55%, rgba(29,122,83,0) 100%);
+      animation: dmsweep 2.1s ease-in-out infinite;
+    }
+    @keyframes dmsweep { 0% { top: -46px; } 100% { top: 148px; } }
+    .dmclock { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.16em; color: var(--muted); }
+    .dmchip {
+      align-self: flex-start;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      padding: 5px 10px;
+      border-radius: 99px;
+    }
+    .steps { margin: auto 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+    .steps li { display: flex; gap: 10px; align-items: center; font-size: 13px; color: var(--muted); transition: color 0.3s ease; }
+    .steps li::before { content: ""; width: 14px; height: 14px; border-radius: 99px; border: 1px solid var(--line-ink); flex-shrink: 0; transition: all 0.3s ease; }
+    .steps li.run { color: var(--ink); }
+    .steps li.run::before { border-color: var(--copper); border-top-color: transparent; animation: spin 0.8s linear infinite; }
+    .steps li.ok { color: var(--green); }
+    .steps li.ok::before { content: "\2713"; display: grid; place-items: center; font-size: 9px; border-color: var(--green-hot); background: rgba(29,122,83,0.12); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .stamp-paid {
+      position: absolute;
+      top: 34%; left: 50%;
+      transform: translate(-50%, -50%) rotate(-7deg) scale(1.25);
+      padding: 10px 20px;
+      border: 2.5px solid var(--green-hot);
+      color: var(--green-hot);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 17px;
+      letter-spacing: 0.26em;
+      background: rgba(251, 248, 238, 0.94);
+      z-index: 3;
+      animation: stamped 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+    }
+    @keyframes stamped {
+      to { transform: translate(-50%, -50%) rotate(-7deg) scale(1); opacity: 1; }
+      0% { opacity: 0; }
+    }
+    .dmdemo-note { margin-top: 18px; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.1em; color: var(--muted); }
+
     /* ---------- footer ---------- */
     footer {
       border-top: 1px solid var(--line-ink);
@@ -495,6 +594,7 @@
     @media (max-width: 900px) {
       .hero { grid-template-columns: 1fr; padding-top: 8vh; gap: 44px; }
       .flow { grid-template-columns: 1fr; gap: 28px; }
+      .demogrid { grid-template-columns: 1fr; }
       .footgrid { grid-template-columns: 1fr; gap: 26px; }
       nav { display: none; }
       .live { display: none; }
@@ -528,6 +628,7 @@
       <a href="#rails">RAILS</a>
       <a href="#flow">SETTLEMENT</a>
       <a href="#protocol">PROTOCOL</a>
+      <a href="#demo">DEMO</a>
       <a href="https://github.com/zhengge6/TATOUPAY">GITHUB</a>
     </nav>
   </header>
@@ -546,7 +647,7 @@
         <a class="cta" href="https://github.com/zhengge6/TATOUPAY">VIEW SOURCE</a>
         <a class="cta ghost" href="https://github.com/zhengge6/TATOUPAY/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE</a>
       </div>
-      <p class="fineprint rv d3">ALIPAY OPENAPI &middot; BEPUSDT SIDECAR &middot; EASYPAY V1/V2 COMPATIBLE</p>
+      <p class="fineprint rv d3">ALIPAY OPENAPI &middot; BUILT-IN TRON WATCHER &middot; EASYPAY V1/V2 COMPATIBLE</p>
     </div>
 
     <div class="mockwrap rv d2">
@@ -567,7 +668,7 @@
           <div class="k" style="margin-bottom:10px">PAYMENT METHOD</div>
           <div class="rail on" data-rail><span><i class="dot"></i>Business QR</span><span class="badge">READY</span></div>
           <div class="rail" data-rail><span><i class="dot"></i>Transfer</span><span class="badge">READY</span></div>
-          <div class="rail" data-rail><span><i class="dot"></i>Crypto</span><span class="badge">BEPUSDT</span></div>
+          <div class="rail" data-rail><span><i class="dot"></i>Crypto</span><span class="badge">TRC20 USDT</span></div>
           <div class="rail"><span><i class="dot"></i>Vmq</span><span class="badge warn">WIRING UP</span></div>
           <div class="paybtn">CONTINUE</div>
         </main>
@@ -578,7 +679,7 @@
   <section id="rails">
     <div class="sechead rv">
       <h2>Rails</h2>
-      <span class="mono">FOUR CHANNELS &middot; TWO LIVE &middot; ONE SIDECAR &middot; ONE WIP</span>
+      <span class="mono">FOUR CHANNELS &middot; THREE LIVE &middot; SIDECAR OPTIONAL &middot; VMQ NEXT</span>
     </div>
     <div class="grid">
       <article class="cell rv" style="--tone: var(--alipay)">
@@ -597,10 +698,10 @@
       </article>
       <article class="cell rv d2" style="--tone: var(--usdt)">
         <span class="num">03</span>
-        <div class="tag">BEPUSDT</div>
+        <div class="tag">NATIVE TRON &middot; SIDECAR</div>
         <h3>Crypto</h3>
-        <p>A Go sidecar handles chains and assets via trade_type. Native gas never touches the token amount.</p>
-        <span class="state">&#9679; SIDECAR</span>
+        <p>Built-in TRC20 watcher matches exact micro-amounts on-chain. The BEpusdt Go sidecar stays optional.</p>
+        <span class="state">&#9679; LIVE</span>
       </article>
       <article class="cell rv d3" style="--tone: var(--copper)">
         <span class="num">04</span>
@@ -656,6 +757,31 @@
     </div>
   </section>
 
+  <section id="demo">
+    <div class="sechead rv">
+      <h2>Payment flow</h2>
+      <span class="mono">INTERACTIVE DEMO &middot; NO REAL MONEY MOVES</span>
+    </div>
+    <div class="demogrid rv d1">
+      <div class="demorails">
+        <button type="button" class="drail" data-demo-rail="merchant"><i></i>Business QR<em>READY</em></button>
+        <button type="button" class="drail" data-demo-rail="transfer"><i></i>Transfer memo<em>READY</em></button>
+        <button type="button" class="drail" data-demo-rail="crypto"><i></i>Crypto USDT<em>NATIVE TRC20</em></button>
+        <button type="button" class="drail" disabled><i></i>Vmq sign-free<em>WIRING UP</em></button>
+        <p class="dmdemo-note">PICK A RAIL &middot; THE ORDER IS CREATED WITH A UNIQUE CENT AND MATCHED FROM THE LEDGER.</p>
+      </div>
+      <div class="device">
+        <div class="dmscreen" id="demo-screen">
+          <div class="dm-empty">
+            <div class="k">STEP 01</div>
+            <h3>Select a payment rail</h3>
+            <p>Every demo order is created with a unique payable cent &mdash; here <em class="c">&yen;5.37</em> &mdash; and settles only when that exact cent shows up.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="footgrid">
       <div class="footbrand">
@@ -687,7 +813,7 @@
   <script>
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const items = ["ALIPAY OPENAPI", "BUSINESS QR", "TRANSFER MEMO", "BEPUSDT USDT",
+    const items = ["ALIPAY OPENAPI", "BUSINESS QR", "TRANSFER MEMO", "TRC20 USDT WATCHER",
       "EASYPAY V1 MD5", "EASYPAY V2 RSA2", "SQLITE PERSISTENCE", "ONE BUN PROCESS"];
     const half = items.map(t => "<span>" + t + "</span>").join("");
     document.getElementById("tick").innerHTML = half;
@@ -723,6 +849,94 @@
     }, 1000);
 
     document.getElementById("yr").textContent = new Date().getFullYear();
+
+    /* ---- payment flow demo ---- */
+    const demoSection = document.getElementById("demo");
+    if (demoSection) {
+      const screenEl = document.getElementById("demo-screen");
+      const railBtns = [...demoSection.querySelectorAll("[data-demo-rail]")];
+      let demoTimeouts = [];
+      let demoClockTimer = null;
+
+      const resetDemoClock = () => {
+        demoTimeouts.forEach(clearTimeout);
+        demoTimeouts = [];
+        if (demoClockTimer) { clearInterval(demoClockTimer); demoClockTimer = null; }
+        screenEl.querySelector(".stamp-paid")?.remove();
+      };
+      const later = (fn, ms) => demoTimeouts.push(setTimeout(fn, ms));
+      const stampPaid = () => {
+        const stamp = document.createElement("div");
+        stamp.className = "stamp-paid";
+        stamp.textContent = "MATCHED & PAID";
+        screenEl.appendChild(stamp);
+      };
+
+      const midPanels = {
+        merchant: `<div class="dmqrbox"></div>
+          <p class="mono" style="margin:0;font-size:11px;letter-spacing:.14em;color:var(--muted)">SCAN WITH ALIPAY &middot; PAY EXACTLY THIS AMOUNT</p>`,
+        transfer: `<p style="margin:auto 0;font-size:14px;line-height:1.8;color:var(--ink-soft)">Amount and order id ride together in the transfer memo.<br />MEMO&nbsp;<strong class="mono">A202608270001</strong>&nbsp;&middot;&nbsp;&yen;<strong class="mono">5.37</strong></p>`,
+        crypto: `<div class="dmamount" style="font-size:34px;color:#0f5132">0.74&nbsp;USDT</div>
+          <span class="dmchip" style="border:1px solid var(--usdt);color:var(--usdt)">TRC20 &middot; ADDRESS ROTATED</span>
+          <p class="mono" style="margin:0;font-size:11px;letter-spacing:.12em;color:var(--muted)">TQ5nrRz1VHbJnuIo9YWy6wfYEfiNakUpqX</p>`,
+      };
+
+      function renderPay(rail, inst = false) {
+        resetDemoClock();
+        const titles = {
+          merchant: ["Business QR", "ALIPAY BLUE SECOND SCREEN"],
+          transfer: ["Transfer", "MEMO CARRIES THE ORDER ID"],
+          crypto: ["Crypto", "ON-CHAIN WATCHER EVERY 12S"],
+        };
+        screenEl.innerHTML = `
+          <div class="dmhead">
+            <div><div class="k">STEP 02 &middot; ${titles[rail][1]}</div>
+            <div class="dmamount">&yen;5.37</div></div>
+            <span class="dmclock" id="dm-clock">04:59</span>
+          </div>
+          ${midPanels[rail]}
+          <ol class="steps">
+            <li class="ok">Unique cent locked</li>
+            <li data-watch>Ledger sweep watching</li>
+            <li data-callback>notify_url receives success</li>
+          </ol>`;
+        let sec = 299;
+        demoClockTimer = setInterval(() => {
+          sec = Math.max(0, sec - 1);
+          const el = document.getElementById("dm-clock");
+          if (!el || sec === 0) return void (demoClockTimer && clearInterval(demoClockTimer));
+          el.textContent = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
+        }, 1000);
+
+        const watch = screenEl.querySelector("[data-watch]");
+        const callback = screenEl.querySelector("[data-callback]");
+        if (inst) {
+          watch.classList.add("ok");
+          callback.classList.add("ok");
+          stampPaid();
+          return;
+        }
+        later(() => watch.classList.add("run"), 500);
+        later(() => { watch.className = "ok"; callback.classList.add("run"); }, 2400);
+        later(() => { callback.className = "ok"; stampPaid(); }, 3900);
+      }
+
+      railBtns.forEach((btn) => btn.addEventListener("click", () => {
+        railBtns.forEach((other) => other.classList.toggle("on", other === btn));
+        renderPay(btn.dataset.demoRail, reduce);
+      }));
+
+      const deepLink = location.hash.match(/^#demo-state=([\w-]+)$/);
+      if (deepLink) {
+        const [rail, mode] = decodeURIComponent(deepLink[1]).split("-");
+        const target = railBtns.find((btn) => btn.dataset.demoRail === rail);
+        if (target) {
+          target.classList.add("on");
+          renderPay(rail, mode === "paid");
+          demoSection.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        }
+      }
+    }
 
     const io = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
