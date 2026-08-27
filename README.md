@@ -25,6 +25,7 @@
 
 - One process, one SQLite file: admin console, two-step checkout, payment APIs, and settlement matching ship together.
 - Settlement truth comes from the Alipay bill ledger (`alipay.data.bill.accountlog.query`), not from trusting inbound webhooks.
+- Crypto settles from the chain itself: a built-in TRC20 watcher watches your address pool inside the same process; no external gateway required.
 - Checkout step one is a Stripe-style method list; step two wears the native skin of each rail instead of one shared template.
 
 ## Channels
@@ -33,7 +34,8 @@
 |------|--------|----------------|
 | Alipay business QR | Available | Official account log matches a unique cent: payable = order + `0.01`–`0.99` |
 | Alipay transfer | Available | Amount + transfer memo carry the merchant order id |
-| Crypto (BEpusdt) | Available | Go sidecar. Network and asset follow BEpusdt `trade_type`; nothing hardcoded here |
+| Crypto (native TRON) | Available | Built-in watcher polls TronGrid every 12 s; exact micro-amount match on confirmed TRC20 transfers |
+| Crypto (BEpusdt) | Optional | Go sidecar fallback; network/asset follow its `trade_type`. Used only when the native pool is off |
 | VMQ sign-free | Wiring up | Monitor `heart`/`push` endpoints exist. No create-order, no amount-code pool, not on checkout |
 
 Explicitly out of scope: refunds, payouts, close-order, settlement sweeps, multi-merchant.
@@ -110,12 +112,14 @@ Signing: V1 sorts non-empty scalar params (excluding `sign`, `sign_type`), joins
 
 A modern JSON surface lives beside it: `POST /api/pay/create`, `POST /api/pay/query`, `POST /api/merchant/info`, `POST /api/merchant/orders`.
 
+Crypto: enable **Native USDT (TRON)** in the admin console by setting an address pool and a CNY-per-USDT rate (snapshotted into each order at creation). The watcher polls TronGrid `transactions/trc20` every 12 s and marks an order paid when a confirmed transfer carries the exact expected micro-amount inside the order window. Keeping `bepusdt_base_url` + token also filled keeps the Go sidecar as fallback; it uses `POST /api/v1/order/create-transaction` and notify `status=2` → reply `success`.
+
 VMQ monitor compatibility: `GET|POST /appHeart` and `/appPush` respond today; push-to-pay matching lands with the VMQ release.
 
 ## Project layout
 
 ```
-src/server   Hono API: easypay, alipay bills, bepusdt, orders, admin, vmq stubs
+src/server   Hono API: easypay, alipay bills, native tron-usdt watcher, bepusdt, orders, admin, vmq stubs
 src/web      React console and checkout (shadcn/ui, Tailwind)
 src/shared   Zod contracts shared by both sides
 tests        Bun unit tests

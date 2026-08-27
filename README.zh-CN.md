@@ -25,6 +25,7 @@
 
 - 一个进程、一个 SQLite 文件：后台、收银台、支付接口、账务匹配一起交付。
 - 到账判定来自支付宝账单流水（`alipay.data.bill.accountlog.query`），不信任入站 Webhook。
+- 加密货币直接以链上为真：同一进程内置 TRC20 监控看守你的地址池，无需外部网关。
 - 收银台第一步是 Stripe 式支付方式列表；第二步按通道换原生皮肤，不做同一套模板。
 
 ## 通道
@@ -33,7 +34,8 @@
 |------|------|----------|
 | 支付宝经营码 | 可用 | 开放平台账务明细匹配唯一分：应付 = 订单 + `0.01`–`0.99` |
 | 支付宝转账 | 可用 | 金额 + 转账备注携带商户订单号 |
-| 加密货币（BEpusdt） | 可用 | Go 旁路网关。网络与资产由 BEpusdt `trade_type` 决定，此处不写死 |
+| 加密货币（原生 TRON） | 可用 | 内置监控每 12 秒轮询 TronGrid，已确认 TRC20 转账按精确微元匹配 |
+| 加密货币（BEpusdt） | 可选 | Go 旁路兜底；网络与资产由其 `trade_type` 决定。仅在关闭原生池时启用 |
 | V免签 | 接入中 | 监控 `heart`/`push` 端点已就绪。创单、金额码池、收银台入口未接 |
 
 明确不做：退款、代付、关单、结算、多商户。
@@ -110,12 +112,14 @@ Compose 只发布 `127.0.0.1:3000` 并设置 `TRUST_PROXY=true`，TLS 终结交�
 
 旁边还有一套现代 JSON 接口：`POST /api/pay/create`、`POST /api/pay/query`、`POST /api/merchant/info`、`POST /api/merchant/orders`。
 
+加密货币：在后台「收款配置」开启**原生 USDT（TRON）**，填地址池与 CNY/USDT 汇率（汇率在创单时快照写入订单）。监控每 12 秒拉取 TronGrid `transactions/trc20`，窗口内出现携带精确微元数额的已确认转账即判定到账并回调上游。同时保留 `bepusdt_base_url` + Token 则维持 Go 旁路兜底：`POST /api/v1/order/create-transaction` 创建，回调 `status=2` 后响应 `success`。
+
 V免签监控兼容：`GET|POST /appHeart` 与 `/appPush` 已可响应；推送 matched 打单随 VMQ 版本落地。
 
 ## 项目结构
 
 ```
-src/server   Hono API：easypay、支付宝账单、bepusdt、订单、后台、vmq 桩
+src/server   Hono API：easypay、支付宝账单、原生 TRON-USDT 监控、bepusdt、订单、后台、vmq 桩
 src/web      React 后台与收银台（shadcn/ui、Tailwind）
 src/shared   两端共享的 Zod 契约
 tests        Bun 单元测试
