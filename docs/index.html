@@ -3,194 +3,731 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TATOUPAY</title>
-  <meta name="description" content="Single-instance payment gateway. Stripe-shaped checkout. Channel-native second screens." />
+  <title>TATOUPAY — Single-instance Payment Gateway</title>
+  <meta name="description" content="A self-hosted payment terminal for one merchant. Step one is a Stripe method list. Step two wears the native skin of each rail." />
+  <meta property="og:title" content="TATOUPAY" />
+  <meta property="og:description" content="Self-hosted payment terminal. Stripe-shaped checkout, channel-native second screens." />
+  <meta name="theme-color" content="#f2eee2" />
   <link rel="icon" href="./logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f4f1ea;
-      --ink: #16140f;
-      --muted: #5c564c;
-      --line: #d8d2c6;
-      --paper: #fcfaf5;
-      --accent: #0b3d91;
+      --bg: #f2eee2;
+      --bg-deep: #ebe4cf;
+      --paper: #fbf8ee;
+      --ink: #182218;
+      --ink-soft: #34412f;
+      --muted: #6d7461;
+      --line: #d9d2ba;
+      --line-ink: #beb698;
+      --green: #0f5132;
+      --green-hot: #1d7a53;
+      --copper: #a8662a;
       --alipay: #1677ff;
       --usdt: #26a17b;
+      --term-bg: #14251a;
+      --term-ink: #cfe8d4;
+      --shadow: 10px 10px 0 rgba(24, 34, 24, 0.09);
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; background: var(--bg); color: var(--ink); }
     body {
-      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif;
+      font-family: "Space Grotesk", "PingFang SC", "Microsoft YaHei", sans-serif;
       min-height: 100dvh;
+      font-size: 16px;
+      line-height: 1.5;
     }
-    .sans { font-family: ui-sans-serif, "Segoe UI", sans-serif; }
-    .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; }
+    ::selection { background: var(--green); color: var(--paper); }
     a { color: inherit; }
+
+    /* ---------- atmosphere: engraving glow + ledger rules + grain ---------- */
+    .sky {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(1100px 520px at 82% -10%, rgba(29, 122, 83, 0.16), transparent 62%),
+        radial-gradient(900px 480px at -12% 28%, rgba(168, 102, 42, 0.11), transparent 60%),
+        linear-gradient(var(--bg), var(--bg-deep));
+    }
+    .sky::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(to bottom, transparent 0 47px, rgba(24, 34, 24, 0.045) 47px 48px),
+        repeating-linear-gradient(to right, transparent 0 47px, rgba(24, 34, 24, 0.03) 47px 48px);
+      mask-image: radial-gradient(120% 90% at 50% 0%, black 40%, transparent 100%);
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.13 0 0 0 0 0.09 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .serif { font-family: "Fraunces", Georgia, serif; }
+    .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+
+    /* ---------- header ---------- */
     header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 22px 7vw;
+      padding: 16px 6vw;
       border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(8px);
     }
     .mark { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-    .mark img { width: 36px; height: 36px; }
-    .word {
-      letter-spacing: 0.22em;
-      font-size: 13px;
+    .mark img { width: 34px; height: 34px; }
+    .word { letter-spacing: 0.22em; font-size: 13px; font-weight: 600; }
+    .live {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 18px;
+      padding: 5px 12px;
+      border: 1px solid var(--line-ink);
+      border-radius: 99px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--ink-soft);
+    }
+    .live i {
+      width: 7px; height: 7px; border-radius: 99px;
+      background: var(--green-hot);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(29, 122, 83, 0.45); }
+      55% { box-shadow: 0 0 0 6px rgba(29, 122, 83, 0); }
+    }
+    nav { display: flex; gap: 26px; font-size: 13px; letter-spacing: 0.1em; }
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      padding-bottom: 2px;
+      background: linear-gradient(var(--green), var(--green)) no-repeat right bottom / 0 1px;
+      transition: background-size 0.25s ease, color 0.2s ease;
+    }
+    nav a:hover { color: var(--ink); background-position: left bottom; background-size: 100% 1px; }
+
+    /* ---------- ticker ---------- */
+    .ticker {
+      display: flex;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      user-select: none;
+    }
+    .ticker-track {
+      display: flex;
+      flex-shrink: 0;
+      gap: 0;
+      padding: 9px 0;
+      white-space: nowrap;
+      animation: scroll 36s linear infinite;
+    }
+    .ticker:hover .ticker-track { animation-play-state: paused; }
+    .ticker span {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      padding: 0 26px;
+      position: relative;
+    }
+    .ticker span::after {
+      content: "";
+      position: absolute;
+      right: -2px; top: 50%;
+      width: 4px; height: 4px;
+      border-radius: 99px;
+      background: var(--copper);
+      transform: translateY(-50%);
+    }
+    @keyframes scroll { to { transform: translateX(-100%); } }
+
+    /* ---------- hero ---------- */
+    .hero {
+      padding: 11vh 6vw 9vh;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 56px;
+      align-items: center;
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.26em;
+      color: var(--green);
+      margin: 0 0 22px;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--green); }
+    h1 {
+      margin: 0 0 24px;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: clamp(52px, 8.4vw, 108px);
+      letter-spacing: 0.06em;
+      line-height: 0.94;
       font-weight: 700;
     }
-    nav { display: flex; gap: 22px; font-size: 13px; letter-spacing: 0.08em; }
-    nav a { text-decoration: none; color: var(--muted); }
-    nav a:hover { color: var(--ink); }
-    hero, .hero {
-      padding: 9vh 7vw 8vh;
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 48px;
-      align-items: end;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(42px, 8vw, 92px);
-      letter-spacing: 0.14em;
-      line-height: 0.92;
-      font-weight: 600;
-    }
+    h1 .tdot { color: var(--copper); }
     .lede {
-      max-width: 36rem;
+      max-width: 34rem;
       font-size: 18px;
-      line-height: 1.55;
-      color: var(--muted);
-      font-family: ui-sans-serif, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin: 0 0 32px;
     }
+    .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
     .cta {
       display: inline-flex;
-      margin-top: 28px;
-      padding: 12px 18px;
-      background: var(--ink);
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: var(--green);
       color: var(--paper);
       text-decoration: none;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
+      border: 1px solid var(--green);
+      box-shadow: 6px 6px 0 rgba(15, 81, 50, 0.22);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .cta::after { content: "\2192"; transition: transform 0.18s ease; }
+    .cta:hover { transform: translate(-2px, -2px); box-shadow: 9px 9px 0 rgba(15, 81, 50, 0.24); }
+    .cta:hover::after { transform: translateX(4px); }
+    .cta.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line-ink);
+      box-shadow: none;
+    }
+    .cta.ghost:hover { border-color: var(--ink); box-shadow: none; }
+    .fineprint {
+      margin-top: 26px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+
+    /* ---------- checkout mock ---------- */
+    .mockwrap { position: relative; }
+    .stamp {
+      position: absolute;
+      top: -22px;
+      right: -14px;
+      z-index: 2;
+      transform: rotate(7deg);
+      padding: 8px 14px;
+      border: 2px solid var(--copper);
+      color: var(--copper);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      background: var(--paper);
+      opacity: 0.92;
     }
     .shell {
       background: var(--paper);
-      border: 1px solid var(--line);
-      min-height: 280px;
+      border: 1px solid var(--line-ink);
+      box-shadow: var(--shadow);
       display: grid;
-      grid-template-columns: 0.42fr 0.58fr;
+      grid-template-columns: 0.44fr 0.56fr;
+      min-height: 320px;
     }
-    .shell aside, .shell main { padding: 22px; }
-    .shell aside { border-right: 1px solid var(--line); }
-    .k { font-size: 11px; letter-spacing: 0.16em; color: var(--muted); }
-    .price { font-size: 42px; letter-spacing: -0.04em; margin: 10px 0 0; }
+    .shell aside, .shell main { padding: 24px; }
+    .shell aside {
+      border-right: 1px solid var(--line);
+      background: linear-gradient(160deg, var(--paper) 60%, #f4efdd);
+      display: flex;
+      flex-direction: column;
+    }
+    .k {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+    }
+    .price {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin: 10px 0 4px;
+    }
+    .price small { font-size: 20px; color: var(--muted); }
+    .orderid { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+    .fuse { margin-top: auto; padding-top: 22px; }
+    .fusebar { height: 3px; background: var(--bg-deep); margin-top: 8px; }
+    .fusebar i { display: block; height: 100%; width: 72%; background: var(--green-hot); animation: drain 300s linear forwards; }
+    @keyframes drain { to { width: 0%; } }
     .rail {
       display: flex;
+      gap: 14px;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--line);
-      font-family: ui-sans-serif, "Segoe UI", sans-serif;
+      padding: 13px 10px;
+      border-bottom: 1px dashed var(--line);
       font-size: 14px;
+      transition: background 0.35s ease, padding-left 0.35s ease;
     }
-    .dot { width: 10px; height: 10px; border-radius: 99px; border: 1px solid var(--ink); }
-    .dot.on { background: var(--ink); }
-    section { padding: 0 7vw 10vh; }
-    h2 { font-size: 13px; letter-spacing: 0.2em; margin: 0 0 24px; }
+    .rail span { display: flex; align-items: center; gap: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 99px; border: 1px solid var(--ink-soft); flex-shrink: 0; transition: background 0.3s ease; }
+    .rail.on { background: rgba(29, 122, 83, 0.07); padding-left: 16px; }
+    .rail.on .dot { background: var(--ink); }
+    .badge {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--green);
+      white-space: nowrap;
+    }
+    .badge.warn { color: var(--muted); }
+    .paybtn {
+      margin-top: 16px;
+      padding: 13px;
+      text-align: center;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+
+    /* ---------- sections ---------- */
+    section { padding: 0 6vw 11vh; max-width: 1360px; margin: 0 auto; width: 100%; }
+    .sechead {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      margin: 0;
+    }
+    .sechead .mono { font-size: 11px; letter-spacing: 0.16em; color: var(--muted); }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--line);
-      border: 1px solid var(--line);
+      gap: 18px;
     }
-    .cell { background: var(--paper); padding: 22px; min-height: 180px; }
-    .cell h3 { margin: 0 0 10px; font-size: 16px; }
-    .cell p { margin: 0; font-family: ui-sans-serif, "Segoe UI", sans-serif; font-size: 13px; line-height: 1.55; color: var(--muted); }
-    .tag { display: inline-block; font-size: 10px; letter-spacing: 0.14em; margin-bottom: 12px; color: var(--accent); }
-    footer {
-      padding: 28px 7vw;
-      border-top: 1px solid var(--line);
+    .cell {
+      position: relative;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 24px 22px 20px;
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .cell:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--line-ink); }
+    .cell::before {
+      content: "";
+      position: absolute;
+      top: -1px; left: -1px;
+      width: calc(100% + 2px); height: 3px;
+      background: var(--tone, var(--ink));
+      transform: scaleX(0.18);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .cell:hover::before { transform: scaleX(1); }
+    .num {
+      position: absolute;
+      top: 18px; right: 18px;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 30px;
+      color: var(--line-ink);
+    }
+    .tag {
+      display: inline-block;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      margin-bottom: 14px;
+      color: var(--tone, var(--green));
+    }
+    .cell h3 { margin: 0 0 10px; font-size: 19px; font-weight: 600; letter-spacing: 0.02em; }
+    .cell p { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--muted); }
+    .state {
+      margin-top: auto;
+      padding-top: 16px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      color: var(--green);
+    }
+    .state.hold { color: var(--copper); }
+
+    /* ---------- flow ---------- */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .step {
+      background: transparent;
+      border-top: 1px solid var(--line-ink);
+      padding: 22px 4px 0;
+    }
+    .step .no {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 58px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--green);
+    }
+    .step h3 { margin: 14px 0 8px; font-size: 17px; font-weight: 600; }
+    .step p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--muted); }
+    .step p code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      background: rgba(15, 81, 50, 0.08);
+      padding: 1px 6px;
+    }
+
+    /* ---------- protocol ---------- */
+    .terminal {
+      background: var(--term-bg);
+      border: 1px solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 0;
+      overflow: hidden;
+    }
+    .termhead {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      letter-spacing: 0.08em;
+      align-items: center;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(207, 232, 212, 0.15);
+    }
+    .termhead .k { color: rgba(207, 232, 212, 0.55); }
+    .traffic { display: flex; gap: 7px; }
+    .traffic i { width: 10px; height: 10px; border-radius: 99px; background: rgba(207, 232, 212, 0.22); }
+    .terminal pre {
+      margin: 0;
+      padding: 24px 22px 26px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--term-ink);
+      overflow-x: auto;
+    }
+    .terminal .cm { color: rgba(207, 232, 212, 0.42); }
+    .terminal .hl { color: #ffd9a8; }
+    .terminal .gr { color: #9fe6b8; }
+
+    /* ---------- footer ---------- */
+    footer {
+      border-top: 1px solid var(--line-ink);
+      background: var(--paper);
+    }
+    .footgrid {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 44px 6vw 30px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 32px;
+    }
+    .footbrand p { margin: 12px 0 0; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 24rem; }
+    .footcol .k { display: block; margin-bottom: 14px; }
+    .footcol a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink-soft);
+      font-size: 13.5px;
+      padding: 5px 0;
+    }
+    .footcol a:hover { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+    .baseline {
+      border-top: 1px solid var(--line);
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 18px 6vw 26px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
       color: var(--muted);
     }
+
+    /* ---------- reveal ---------- */
+    .rv { opacity: 0; transform: translateY(16px); }
+    .rv.in { opacity: 1; transform: none; transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1); }
+    .rv.d1.in { transition-delay: 0.08s; }
+    .rv.d2.in { transition-delay: 0.16s; }
+    .rv.d3.in { transition-delay: 0.24s; }
+
+    /* ---------- responsive ---------- */
+    @media (max-width: 1040px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 900px) {
-      .hero, .grid, .shell { grid-template-columns: 1fr; }
-      .shell aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .hero { grid-template-columns: 1fr; padding-top: 8vh; gap: 44px; }
+      .flow { grid-template-columns: 1fr; gap: 28px; }
+      .footgrid { grid-template-columns: 1fr; gap: 26px; }
       nav { display: none; }
+      .live { display: none; }
+      .stamp { right: 4px; top: -18px; }
+    }
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+      .shell { grid-template-columns: 1fr; }
+      .shell aside { border-right: 0; border-bottom: 1px solid var(--line); }
+      .price { font-size: 40px; }
+      h1 { letter-spacing: 0.03em; }
     }
     @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .rv { opacity: 1; transform: none; }
     }
   </style>
 </head>
 <body>
+  <div class="sky" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <noscript><style>.rv { opacity: 1 !important; transform: none !important; }</style></noscript>
+
   <header>
-    <a class="mark" href="./">
+    <span class="mark">
       <img src="./logo.svg" alt="" />
       <span class="word">TATOUPAY</span>
-    </a>
-    <nav class="sans">
-      <a href="https://github.com/zhengge6/TATOUPAY">GitHub</a>
-      <a href="./ARCHITECTURE.md">Architecture</a>
+      <span class="live"><i></i>GATEWAY ONLINE</span>
+    </span>
+    <nav>
+      <a href="#rails">RAILS</a>
+      <a href="#flow">SETTLEMENT</a>
+      <a href="#protocol">PROTOCOL</a>
+      <a href="https://github.com/zhengge6/TATOUPAY">GITHUB</a>
     </nav>
   </header>
 
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="tick"></div>
+    <div class="ticker-track" id="tick2"></div>
+  </div>
+
   <div class="hero">
     <div>
-      <h1>TATOUPAY</h1>
-      <p class="lede">A payment terminal for one merchant. Step one is a Stripe method list. Step two wears the native skin of each rail.</p>
-      <a class="cta sans" href="https://github.com/zhengge6/TATOUPAY">VIEW SOURCE</a>
+      <p class="eyebrow rv">SELF-HOSTED &middot; SINGLE MERCHANT &middot; ONE BUN PROCESS</p>
+      <h1 class="rv d1">TATOUPAY<span class="tdot">.</span></h1>
+      <p class="lede rv d2">A payment terminal you fully own. Step one is a Stripe method list. Step two wears the native skin of each rail &mdash; business QR, transfer memo, or on-chain USDT.</p>
+      <div class="cta-row rv d3">
+        <a class="cta" href="https://github.com/zhengge6/TATOUPAY">VIEW SOURCE</a>
+        <a class="cta ghost" href="https://github.com/zhengge6/TATOUPAY/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE</a>
+      </div>
+      <p class="fineprint rv d3">ALIPAY OPENAPI &middot; BEPUSDT SIDECAR &middot; EASYPAY V1/V2 COMPATIBLE</p>
     </div>
-    <div class="shell" aria-hidden="true">
-      <aside>
-        <div class="k">AMOUNT DUE</div>
-        <div class="price">¥5.01</div>
-      </aside>
-      <main>
-        <div class="k" style="margin-bottom:12px">PAYMENT METHOD</div>
-        <div class="rail"><span><i class="dot on"></i> Business QR</span>Ready</div>
-        <div class="rail"><span><i class="dot"></i> Transfer</span>Ready</div>
-        <div class="rail"><span><i class="dot"></i> Crypto</span>BEpusdt</div>
-        <div class="rail"><span><i class="dot"></i> Vmq</span>Not available</div>
-      </main>
+
+    <div class="mockwrap rv d2">
+      <span class="stamp">MATCHED TO THE CENT</span>
+      <div class="shell" aria-hidden="true">
+        <aside>
+          <div>
+            <div class="k">AMOUNT DUE</div>
+            <div class="price"><small>&yen;</small><span id="cents">000.00</span></div>
+            <div class="orderid mono">OUT_TRADE_NO&nbsp;202608270001&nbsp;&middot;&nbsp;+0.01 UNIQUE CENT</div>
+          </div>
+          <div class="fuse">
+            <div class="k">ORDER EXPIRES IN&nbsp;<span id="clock">04:59</span></div>
+            <div class="fusebar"><i></i></div>
+          </div>
+        </aside>
+        <main>
+          <div class="k" style="margin-bottom:10px">PAYMENT METHOD</div>
+          <div class="rail on" data-rail><span><i class="dot"></i>Business QR</span><span class="badge">READY</span></div>
+          <div class="rail" data-rail><span><i class="dot"></i>Transfer</span><span class="badge">READY</span></div>
+          <div class="rail" data-rail><span><i class="dot"></i>Crypto</span><span class="badge">BEPUSDT</span></div>
+          <div class="rail"><span><i class="dot"></i>Vmq</span><span class="badge warn">WIRING UP</span></div>
+          <div class="paybtn">CONTINUE</div>
+        </main>
+      </div>
     </div>
   </div>
 
-  <section>
-    <h2>RAILS</h2>
+  <section id="rails">
+    <div class="sechead rv">
+      <h2>Rails</h2>
+      <span class="mono">FOUR CHANNELS &middot; TWO LIVE &middot; ONE SIDECAR &middot; ONE WIP</span>
+    </div>
     <div class="grid">
-      <article class="cell">
+      <article class="cell rv" style="--tone: var(--alipay)">
+        <span class="num">01</span>
         <div class="tag">ALIPAY OPENAPI</div>
         <h3>Business QR</h3>
-        <p>Official bill match on a unique payable amount. Second screen uses Alipay blue and a live countdown.</p>
+        <p>Official bill match on a unique payable amount. The second screen wears Alipay blue with a live countdown.</p>
+        <span class="state">&#9679; LIVE</span>
       </article>
-      <article class="cell">
-        <div class="tag">ALIPAYS</div>
+      <article class="cell rv d1" style="--tone: var(--alipay)">
+        <span class="num">02</span>
+        <div class="tag">ALIPAY TRANSFER</div>
         <h3>Transfer</h3>
-        <p>Amount and merchant order id written into the transfer memo. Same Stripe shell.</p>
+        <p>Amount and merchant order id written into the transfer memo. Same Stripe shell, its own second screen.</p>
+        <span class="state">&#9679; LIVE</span>
       </article>
-      <article class="cell">
+      <article class="cell rv d2" style="--tone: var(--usdt)">
+        <span class="num">03</span>
         <div class="tag">BEPUSDT</div>
         <h3>Crypto</h3>
-        <p>Go sidecar. Networks and assets follow BEpusdt trade_type. Native gas is not part of the token amount.</p>
+        <p>A Go sidecar handles chains and assets via trade_type. Native gas never touches the token amount.</p>
+        <span class="state">&#9679; SIDECAR</span>
       </article>
-      <article class="cell">
-        <div class="tag">NOT AVAILABLE</div>
-        <h3>Vmq</h3>
-        <p>Monitor stubs exist. No create-order, no amount-code admin, not on checkout.</p>
+      <article class="cell rv d3" style="--tone: var(--copper)">
+        <span class="num">04</span>
+        <div class="tag">VMQ</div>
+        <h3>Vmq sign-free</h3>
+        <p>Monitor heart and push stubs exist. Amount-code admin and checkout entry are being wired now.</p>
+        <span class="state hold">&#9679; WIRING UP</span>
       </article>
     </div>
   </section>
 
+  <section id="flow">
+    <div class="sechead rv">
+      <h2>Settlement match</h2>
+      <span class="mono">NO WEBHOOK TRUST &middot; THE LEDGER DECIDES</span>
+    </div>
+    <div class="flow">
+      <div class="step rv">
+        <div class="no">1</div>
+        <h3>Create with a unique cent</h3>
+        <p>Every order gets a payable amount nudged by <code>+0.01</code> to <code>+0.99</code>. The cent itself is the correlation key.</p>
+      </div>
+      <div class="step rv d1">
+        <div class="no">2</div>
+        <h3>Payer scans the QR</h3>
+        <p>The second screen shows the exact amount. Countdown holds the order for five minutes, matching side keeps looking until minute ten.</p>
+      </div>
+      <div class="step rv d2">
+        <div class="no">3</div>
+        <h3>Bills confirm, callback fires</h3>
+        <p><code>alipay.data.bill.accountlog.query</code> sweeps pending orders in one merged pass. Cent found: order paid, upstream receives <code>success</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="protocol">
+    <div class="sechead rv">
+      <h2>Drop-in protocol</h2>
+      <span class="mono">EASYPAY MERCHANTS KEEP THEIR PLUGIN CODE</span>
+    </div>
+    <div class="terminal rv d1">
+      <div class="termhead">
+        <span class="k">submit.php &mdash; compatibility layer</span>
+        <span class="traffic"><i></i><i></i><i></i></span>
+      </div>
+      <pre>GET /submit.php?pid=1001<span class="hl">&amp;type=alipay</span>&amp;out_trade_no=A202608270001&amp;name=Coffee
+           &amp;money=5.01&amp;notify_url=https://shop.example.com/notify
+           &amp;<span class="gr">sign=md5(sorted(kv)...key)</span>&amp;sign_type=MD5
+
+<span class="cm"># V1  sorted scalar params + key, lowercase MD5</span>
+<span class="cm"># V2  SHA256WithRSA, 10-digit unix seconds, clock skew 300s</span>
+<span class="cm"># mapi.php / api.php?act=query|order|orders share the same signing</span></pre>
+    </div>
+  </section>
+
   <footer>
-    <span>TATOUPAY</span>
-    <span class="sans">Single-instance gateway</span>
+    <div class="footgrid">
+      <div class="footbrand">
+        <span class="mark">
+          <img src="./logo.svg" alt="" width="34" height="34" />
+          <span class="word">TATOUPAY</span>
+        </span>
+        <p>One self-hosted process for the admin console, the checkout, the EasyPay interface, and Alipay bill matching. No refunds, no payouts, no multi-merchant &mdash; by design.</p>
+      </div>
+      <div class="footcol">
+        <span class="k">PROJECT</span>
+        <a href="https://github.com/zhengge6/TATOUPAY">Source</a>
+        <a href="https://github.com/zhengge6/TATOUPAY/issues">Issues</a>
+        <a href="https://github.com/zhengge6/TATOUPAY/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+      </div>
+      <div class="footcol">
+        <span class="k">UPSTREAM DOCS</span>
+        <a href="https://opendocs.alipay.com/open-v3/26ed84be_alipay.data.bill.accountlog.query">Alipay bill query</a>
+        <a href="https://github.com/v03413/BEpusdt">BEpusdt</a>
+        <a href="https://bun.sh">Bun</a>
+      </div>
+    </div>
+    <div class="baseline">
+      <span>TATOUPAY &middot; SINGLE-INSTANCE GATEWAY</span>
+      <span>RUN ON BUN &middot; BUILT <span id="yr">2026</span></span>
+    </div>
   </footer>
+
+  <script>
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const items = ["ALIPAY OPENAPI", "BUSINESS QR", "TRANSFER MEMO", "BEPUSDT USDT",
+      "EASYPAY V1 MD5", "EASYPAY V2 RSA2", "SQLITE PERSISTENCE", "ONE BUN PROCESS"];
+    const half = items.map(t => "<span>" + t + "</span>").join("");
+    document.getElementById("tick").innerHTML = half;
+    document.getElementById("tick2").innerHTML = half;
+
+    const centsEl = document.getElementById("cents");
+    const target = 501;
+    if (reduce) {
+      centsEl.textContent = (target / 100).toFixed(2);
+    } else {
+      const t0 = performance.now(), dur = 1300;
+      (function tickCost(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        centsEl.textContent = ((target * eased) / 100).toFixed(2);
+        if (p < 1) requestAnimationFrame(tickCost);
+      })(t0);
+
+      const rails = [...document.querySelectorAll("[data-rail]")];
+      let idx = 0;
+      setInterval(() => {
+        rails[idx].classList.remove("on");
+        idx = (idx + 1) % rails.length;
+        rails[idx].classList.add("on");
+      }, 2400);
+    }
+
+    let sec = 4 * 60 + 59;
+    const clock = document.getElementById("clock");
+    if (!reduce) setInterval(() => {
+      if (sec > 0) sec--;
+      clock.textContent = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
+    }, 1000);
+
+    document.getElementById("yr").textContent = new Date().getFullYear();
+
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".rv").forEach(el => io.observe(el));
+  </script>
 </body>
 </html>
