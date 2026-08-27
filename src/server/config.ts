@@ -58,6 +58,10 @@ export function getPublicSettings(database: AppDatabase): PublicSettings {
     v2_platform_public_key: getSetting(database, "v2_platform_public_key", ""),
     v2_merchant_public_key: getSetting(database, "v2_merchant_public_key", ""),
     allow_private_callbacks: getRuntimeEnv().allowPrivateCallbacks,
+    native_crypto_enabled: getSetting(database, "native_crypto_enabled", false),
+    native_tron_addresses: String(getSetting(database, "native_tron_addresses", "")),
+    native_usdt_cny_rate: String(getSetting(database, "native_usdt_cny_rate", "")),
+    native_tron_api_url: String(getSetting(database, "native_tron_api_url", "")),
   };
 }
 

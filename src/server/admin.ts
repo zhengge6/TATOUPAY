@@ -30,6 +30,7 @@ import { getPublicSettings, getSecret, isGatewayReady, setSecret } from "./confi
 import { audit, getSetting, setSetting, type AppDatabase } from "./db";
 import { getRuntimeEnv } from "./env";
 import { AppError, assert } from "./errors";
+import { parseTronAddresses, tronAddressValid } from "./native-crypto";
 import { notificationHistory, queueManualNotification } from "./notifications";
 import { getOrderById, listOrders } from "./orders";
 import {
@@ -263,6 +264,7 @@ export function createAdminRoutes(database: AppDatabase, scanner: PaymentScanner
       "public_base_url", "collection_mode", "transfer_user_id", "alipay_app_id",
       "transfer_link_layer", "payment_poll_interval_seconds", "alipay_endpoint", "alipay_public_key", "v1_enabled", "v2_enabled",
       "bepusdt_base_url", "bepusdt_trade_type", "bepusdt_api_token",
+      "native_crypto_enabled", "native_tron_addresses", "native_usdt_cny_rate", "native_tron_api_url",
     ]);
     for (const key of Object.keys(body)) {
       if (!allowed.has(key)) throw new AppError(400, "UNKNOWN_SETTING", `不支持设置项 ${key}`);
@@ -324,6 +326,38 @@ export function createAdminRoutes(database: AppDatabase, scanner: PaymentScanner
     }
     if (typeof body.bepusdt_api_token === "string" && body.bepusdt_api_token.trim()) {
       setSecret(database, "bepusdt_api_token", body.bepusdt_api_token.trim());
+    }
+    if (typeof body.native_crypto_enabled === "boolean") {
+      setSetting(database, "native_crypto_enabled", body.native_crypto_enabled);
+    }
+    if (typeof body.native_tron_addresses === "string") {
+      const addresses = parseTronAddresses(body.native_tron_addresses);
+      assert(
+        addresses.every(tronAddressValid),
+        400,
+        "INVALID_TRON_ADDRESS",
+        "TRON 地址格式错误（应以 T 开头，34 位 Base58）",
+      );
+      setSetting(database, "native_tron_addresses", addresses.join("\n"));
+    }
+    if (typeof body.native_usdt_cny_rate === "string") {
+      const rate = Number.parseFloat(body.native_usdt_cny_rate);
+      assert(
+        Number.isFinite(rate) && rate > 0 && rate < 100_000,
+        400,
+        "INVALID_USDT_RATE",
+        "USDT 汇率必须为大于 0 的数字",
+      );
+      setSetting(database, "native_usdt_cny_rate", String(rate));
+    }
+    if (typeof body.native_tron_api_url === "string") {
+      if (!body.native_tron_api_url) {
+        setSetting(database, "native_tron_api_url", "");
+      } else {
+        const url = new URL(body.native_tron_api_url);
+        assert(url.protocol === "https:", 400, "INVALID_TRON_API_URL", "TRON API 必须使用 HTTPS");
+        setSetting(database, "native_tron_api_url", url.toString().replace(/\/$/, ""));
+      }
     }
     audit(database, "settings.update", { actor: c.get("admin").username, details: { keys: Object.keys(body) } });
     return c.json({ ok: true, settings: getPublicSettings(database) });

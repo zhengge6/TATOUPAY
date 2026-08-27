@@ -384,7 +384,11 @@ export function CheckoutPage() {
                 ) : null}
                 {hasCrypto ? (
                   <MethodRow selected={activeMethod === "crypto"} onSelect={() => setMethod("crypto")} icon={<CryptoMark />} title="Crypto">
-                    <RedirectHint>继续后由 BEpusdt 给出收款网络与金额。请按显示数额付款；矿工费用该链原生币，不要加进代币数量。</RedirectHint>
+                    <RedirectHint>
+                      {data.crypto?.provider === "native"
+                        ? "继续后生成 TRON USDT 收款地址与精确数额，链上到账由内置监控自动确认；矿工费该链原生币支付。"
+                        : "继续后由 BEpusdt 给出收款网络与金额。请按显示数额付款；矿工费用该链原生币，不要加进代币数量。"}
+                    </RedirectHint>
                   </MethodRow>
                 ) : null}
               </div>

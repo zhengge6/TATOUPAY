@@ -386,13 +386,17 @@ export function getCheckoutData(database: AppDatabase, token: string, signedRetu
   const businessQrUrl = getSetting(database, "business_qr_url", "");
   const transferUserId = getSetting(database, "transfer_user_id", "");
   const transferLinkLayer = getSetting<TransferLinkLayer>(database, "transfer_link_layer", 2);
-  const cryptoEnabled = Boolean(
+  const sidecarEnabled = Boolean(
     (getSetting(database, "bepusdt_base_url", "") || process.env.BEPUSDT_BASE_URL) &&
     (getSecret(database, "bepusdt_api_token") || process.env.BEPUSDT_API_TOKEN),
   );
+  const nativeEnabled = Boolean(getSetting(database, "native_crypto_enabled", false)) &&
+    Boolean(String(getSetting(database, "native_tron_addresses", "")).trim());
+  const cryptoEnabled = sidecarEnabled || nativeEnabled;
   const previewAddress = getSetting(database, "bepusdt_address", "") || process.env.BEPUSDT_ADDRESS || "";
   const previewType = getSetting(database, "bepusdt_trade_type", "") || process.env.BEPUSDT_TRADE_TYPE || "usdt.bep20";
-  const cryptoRow = database.query("SELECT trade_id, address, actual_amount, fiat_amount, trade_type, payment_url, expiration_time FROM crypto_intents WHERE order_id = ? ORDER BY created_at DESC LIMIT 1").get(order.id) as {
+  const cryptoRow = database.query("SELECT provider, trade_id, address, actual_amount, fiat_amount, trade_type, payment_url, expiration_time FROM crypto_intents WHERE order_id = ? ORDER BY created_at DESC LIMIT 1").get(order.id) as {
+    provider: "bepusdt" | "native";
     trade_id: string;
     address: string;
     actual_amount: string;
@@ -409,6 +413,7 @@ export function getCheckoutData(database: AppDatabase, token: string, signedRetu
     trade_type: cryptoRow.trade_type,
     payment_url: cryptoRow.payment_url,
     expiration_time: cryptoRow.expiration_time ?? 0,
+    provider: cryptoRow.provider,
   } : previewAddress ? {
     trade_id: "preview",
     address: previewAddress,
@@ -417,6 +422,7 @@ export function getCheckoutData(database: AppDatabase, token: string, signedRetu
     trade_type: previewType,
     payment_url: "",
     expiration_time: 0,
+    provider: "preview" as const,
   } : undefined;
   return {
     trade_no: order.trade_no,
