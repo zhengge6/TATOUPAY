@@ -78,7 +78,8 @@ export async function createCryptoCharge(database: AppDatabase, order: {
   const amount = (order.payable_amount_cents / 100).toFixed(2);
   const payload: Record<string, string | number> = {
     order_id: order.trade_no,
-    amount,
+    // Vendored BEpusdt v1.24 binds `amount`/`timeout` to float64 fields.
+    amount: Number(amount),
     fiat: "CNY",
     trade_type: config.tradeType,
     name: order.name.slice(0, 127),
