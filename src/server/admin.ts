@@ -341,18 +341,14 @@ export function createAdminRoutes(database: AppDatabase, scanner: PaymentScanner
       setSetting(database, "native_tron_addresses", addresses.join("\n"));
     }
     if (typeof body.native_usdt_cny_rate === "string") {
-      if (!body.native_usdt_cny_rate) {
-        setSetting(database, "native_usdt_cny_rate", "");
-      } else {
-        const rate = Number.parseFloat(body.native_usdt_cny_rate);
-        assert(
-          Number.isFinite(rate) && rate > 0 && rate < 100_000,
-          400,
-          "INVALID_USDT_RATE",
-          "USDT 汇率必须为大于 0 的数字",
-        );
-        setSetting(database, "native_usdt_cny_rate", String(rate));
-      }
+      const rate = Number.parseFloat(body.native_usdt_cny_rate);
+      assert(
+        Number.isFinite(rate) && rate > 0 && rate < 100_000,
+        400,
+        "INVALID_USDT_RATE",
+        "USDT 汇率必须为大于 0 的数字",
+      );
+      setSetting(database, "native_usdt_cny_rate", String(rate));
     }
     if (typeof body.native_tron_api_url === "string") {
       if (!body.native_tron_api_url) {
