@@ -77,6 +77,17 @@ function CryptoStage({
           </div>
           <p>{charge.address}</p>
         </div>
+        {charge.payment_url ? (
+          <a
+            className="be-back"
+            href={charge.payment_url}
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "block", textAlign: "center", fontWeight: 600 }}
+          >
+            打开 BEpusdt 收银台 ↗
+          </a>
+        ) : null}
         <p className="be-gas">链上代币转账的矿工费用该网络原生币支付，不要加进应付代币数量。</p>
         <button type="button" className="be-back" onClick={onBack}>选错了付款方式？返回重选</button>
         <div className="be-foot">{networkLabel}</div>

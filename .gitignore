@@ -17,3 +17,9 @@ data/
 .idea/
 .vscode/
 Thumbs.db
+
+# Vendored BEpusdt runtime artifacts
+/bepusdt/bin/
+/data/bepusdt/
+bepusdt/*.db
+bepusdt/.env

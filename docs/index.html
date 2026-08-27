@@ -647,7 +647,7 @@
         <a class="cta" href="https://github.com/zhengge6/TATOUPAY">VIEW SOURCE</a>
         <a class="cta ghost" href="https://github.com/zhengge6/TATOUPAY/blob/main/docs/ARCHITECTURE.md">ARCHITECTURE</a>
       </div>
-      <p class="fineprint rv d3">ALIPAY OPENAPI &middot; BUILT-IN TRON WATCHER &middot; EASYPAY V1/V2 COMPATIBLE</p>
+      <p class="fineprint rv d3">ALIPAY OPENAPI &middot; BUNDLED BEPUSDT GATEWAY &middot; EASYPAY V1/V2 COMPATIBLE</p>
     </div>
 
     <div class="mockwrap rv d2">
@@ -698,9 +698,9 @@
       </article>
       <article class="cell rv d2" style="--tone: var(--usdt)">
         <span class="num">03</span>
-        <div class="tag">NATIVE TRON &middot; SIDECAR</div>
+        <div class="tag">BEPUSDT &middot; VENDORED</div>
         <h3>Crypto</h3>
-        <p>Built-in TRC20 watcher matches exact micro-amounts on-chain. The BEpusdt Go sidecar stays optional.</p>
+        <p>The upstream Go gateway ships inside this repo under bepusdt/. Payers meet its native green checkout card.</p>
         <span class="state">&#9679; LIVE</span>
       </article>
       <article class="cell rv d3" style="--tone: var(--copper)">
@@ -766,7 +766,7 @@
       <div class="demorails">
         <button type="button" class="drail" data-demo-rail="merchant"><i></i>Business QR<em>READY</em></button>
         <button type="button" class="drail" data-demo-rail="transfer"><i></i>Transfer memo<em>READY</em></button>
-        <button type="button" class="drail" data-demo-rail="crypto"><i></i>Crypto USDT<em>NATIVE TRC20</em></button>
+        <button type="button" class="drail" data-demo-rail="crypto"><i></i>Crypto USDT<em>BUNDLED GO</em></button>
         <button type="button" class="drail" disabled><i></i>Vmq sign-free<em>WIRING UP</em></button>
         <p class="dmdemo-note">PICK A RAIL &middot; THE ORDER IS CREATED WITH A UNIQUE CENT AND MATCHED FROM THE LEDGER.</p>
       </div>
@@ -813,8 +813,8 @@
   <script>
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const items = ["ALIPAY OPENAPI", "BUSINESS QR", "TRANSFER MEMO", "TRC20 USDT WATCHER",
-      "EASYPAY V1 MD5", "EASYPAY V2 RSA2", "SQLITE PERSISTENCE", "ONE BUN PROCESS"];
+    const items = ["ALIPAY OPENAPI", "BUSINESS QR", "TRANSFER MEMO", "BEPUSDT USDT",
+      "EASYPAY V1 MD5", "EASYPAY V2 RSA2", "SQLITE PERSISTENCE", "ONE REPO, TWO ENGINES"];
     const half = items.map(t => "<span>" + t + "</span>").join("");
     document.getElementById("tick").innerHTML = half;
     document.getElementById("tick2").innerHTML = half;

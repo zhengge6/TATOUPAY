@@ -3,6 +3,8 @@ services:
     build: .
     image: alimpay-bun:local
     restart: unless-stopped
+    depends_on:
+      - bepusdt
     ports:
       - "127.0.0.1:3000:3000"
     environment:
@@ -14,5 +16,20 @@ services:
       APP_MASTER_KEY: ${APP_MASTER_KEY:-}
       TRUST_PROXY: "true"
       ALLOW_PRIVATE_CALLBACKS: "false"
+      BEPUSDT_BASE_URL: http://bepusdt:8080
     volumes:
       - ./data:/data
+
+  # Vendored from ./bepusdt (GPL-3.0, see bepusdt/VENDOR.md).
+  # First boot opens its setup wizard on :8080; fill the site address with
+  # the publicly reachable origin so payers can open its checkout pages.
+  bepusdt:
+    build:
+      context: ./bepusdt
+      dockerfile: dockerfile
+    image: bepusdt-vendored:local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/bepusdt:/var/lib/bepusdt
